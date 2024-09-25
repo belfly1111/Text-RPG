@@ -8,8 +8,6 @@ namespace Text_RPG
 {
     internal class Player
     {
-        // 자동 구현 프로퍼티를 사용해 외부에서 잘못된 변수가 들어오면 차단한다.
-        // 단, 이름으로 플레이어를 구분하기 때문에 Name 변수는 외부의 직접적 접근을 막는다.
         private string name = "스파르타 용사";
         public string Name
         {
@@ -28,6 +26,7 @@ namespace Text_RPG
         public Player(string PlayerName)
         {
             Name = PlayerName;
+            Inventory = new List<Item>();
         }
 
         public void PlayerInfo()
@@ -36,12 +35,18 @@ namespace Text_RPG
             {
                 Console.Clear();
 
+                string curAttack = "";
+                if (Attack > 10) curAttack += String.Format( " (+{0}) ",(Attack - 10).ToString());
+
+                string curDefense = "";
+                if (Defense > 5) curDefense += String.Format(" (+{0}) ", (Defense - 5).ToString());
+
                 Console.WriteLine("상태 보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.\n");
                 Console.WriteLine("Lv. {0}", Level);
-                Console.WriteLine("{0} ( {1} )", "전사", Name);
-                Console.WriteLine("공격력 : {0}", Attack);
-                Console.WriteLine("방어력 : {0}", Defense);
+                Console.WriteLine("{0} ( {1} )", Name, "전사");
+                Console.WriteLine("공격력 : {0} {1}", Attack, curAttack);
+                Console.WriteLine("방어력 : {0} {1}", Defense, curDefense);
                 Console.WriteLine("체력 : {0}", Hp);
                 Console.WriteLine("Gold : {0}\n", Gold);
 
@@ -72,7 +77,7 @@ namespace Text_RPG
             }
         }
 
-        public void PlayerInven()
+        public void InvenSystem()
         {
             while (true)
             {
@@ -80,11 +85,10 @@ namespace Text_RPG
 
                 Console.WriteLine("인벤토리");
                 Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
-                Console.WriteLine("[아이템 목록]\n");
 
                 if(Inventory != null)
                 {
-                    PrintInvenItem();
+                    PrintInvenItem(false);
                 }
 
                 Console.WriteLine("1. 장착 관리");
@@ -105,9 +109,10 @@ namespace Text_RPG
 
                 if(curInput == 1)
                 {
-                    PlayerInven_Management();
+                    if (InvenSystem_Item_Management()) continue;  
                 }
-                else if (curInput == 0)
+
+                if (curInput == 0)
                 {
                     break;
                 }
@@ -119,7 +124,7 @@ namespace Text_RPG
             }
         }
 
-        public void PlayerInven_Management()
+        public bool InvenSystem_Item_Management()
         {
             while (true)
             {
@@ -130,7 +135,7 @@ namespace Text_RPG
 
                 if (Inventory != null)
                 {
-                    PrintInvenItem();
+                    PrintInvenItem(true);
                 }
                 Console.WriteLine("0. 나가기\n");
 
@@ -146,7 +151,27 @@ namespace Text_RPG
                     curInput = -1;
                 }
 
-                if (curInput == 0)
+                if (curInput.GetType() == typeof(int) && Inventory != null && curInput >= 1)
+                {
+                    if(curInput >= 1 && curInput <= Inventory.Count)
+                    {
+                        if (Inventory[curInput - 1].isEquiped)
+                        {
+                            Inventory[curInput - 1].isEquiped = false;
+                            if (Inventory[curInput - 1].haveAttackStat) Attack -= Inventory[curInput - 1].AttackStat;
+                            if (Inventory[curInput - 1].haveDefenseStat) Defense -= Inventory[curInput - 1].DefenseStat;
+                        }
+                        else
+                        {
+                            Inventory[curInput - 1].isEquiped = true;
+                            if (Inventory[curInput - 1].haveAttackStat) Attack += Inventory[curInput - 1].AttackStat;
+                            if (Inventory[curInput - 1].haveDefenseStat) Defense += Inventory[curInput - 1].DefenseStat;
+                        }
+
+                        continue;
+                    }
+                }
+                else if(curInput == 0)
                 {
                     break;
                 }
@@ -156,36 +181,26 @@ namespace Text_RPG
                     string temp = Console.ReadLine()!;
                 }
             }
+
+            return true;
         }
 
-        public void PrintInvenItem()
+        public void PrintInvenItem(bool isEquipDecision)
         {
             Console.WriteLine("[아이템 목록]");
 
             for (int i = 0; i < Inventory.Count; i++)
             {
-                string curItem = "- ";
-                curItem += i.ToString() + " ";
-                if (Inventory[i].isEquiped)
+                string EquipDecision = "";
+                if (isEquipDecision)
                 {
-                    curItem += "[E]";
+                    EquipDecision += (i + 1).ToString();
                 }
 
-                curItem += Inventory[i].Name + "    | ";
-
-                if (Inventory[i].haveAttackStat)
-                {
-                    curItem += ("공격력 +{0} | ", Inventory[i].AttackStat.ToString());
-                }
-                if (Inventory[i].haveDefenseStat)
-                {
-                    curItem += ("방어력 +{0} | ", Inventory[i].DefenseStat.ToString());
-                }
-
-                curItem += Inventory[i].Explanation;
-                Console.WriteLine(curItem);
+                Console.WriteLine("- {0} {1}", EquipDecision, Inventory[i].ItemInfo());
             }
-            Console.WriteLine("\n");
+
+            Console.Write("\n");
         }
     }
 }

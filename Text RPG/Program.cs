@@ -7,9 +7,10 @@
         static void Main(string[] args)
         {
             Program TextRPG = new Program();
-            Player curPlayer = new Player(TextRPG.SetName());
+            Player curPlayer = new Player(TextRPG.SetNameSystem());
+            Store store = new Store();
 
-            while(true)
+            while (true)
             {
                 Console.Clear();
                 int Choice = TextRPG.Town();
@@ -19,7 +20,11 @@
                 }
                 else if(Choice == 2)
                 {
-                    curPlayer.PlayerInven();
+                    curPlayer.InvenSystem();
+                }
+                else if (Choice == 3)
+                {
+                    store.StoreSystem(curPlayer);
                 }
                 else
                 {
@@ -29,15 +34,19 @@
             }
         }
 
-        public string SetName()
+        public string SetNameSystem()
         {
-            bool isNameComplete = false;
-            string inputName = "";   
-            while (!isNameComplete)
+            string inputName = "";
+
+            while (true)
             {
                 Console.WriteLine("스파르타 던전에 오신 여러분 환영합니다.\n원하시는 이름을 설정해주세요.\n");
                 inputName = Console.ReadLine()!;
-                if (string.IsNullOrEmpty(inputName)) continue;
+                if (string.IsNullOrEmpty(inputName))
+                {
+                    Console.Clear();
+                    continue;
+                }
 
                 Console.WriteLine("\n입력하신 이름은 {0} 입니다.\n", inputName);
 
@@ -55,12 +64,16 @@
                     curInput = -1;
                 }
                 
-                if (curInput == 2)
+                if (curInput == 1)
+                {
+                    Console.Clear();
+                    break;
+                }
+                else
                 {
                     Console.Clear();
                     continue;
                 }
-                else break;
             }
 
             return inputName;
