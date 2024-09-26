@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-// 조건문 분기가 깔끔하게 읽히지 않습니다. 더 좋은 구조나 방법이 있지
+// 조건문 분기가 깔끔하게 읽히지 않습니다. 더 좋은 구조나 방법이 있지않을까 고민이 됩니다.
 
 namespace Text_RPG
 {
